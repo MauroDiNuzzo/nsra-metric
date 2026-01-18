@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "Null-Stratified Rank Accuracy (NSRA)"
+authors:
+  - family-names: DiNuzzo
+    given-names: Mauro
+year: 2026
+url: https://github.com/MauroDiNuzzo/nsra-metric
+abstract: >
+  Null-Stratified Rank Accuracy (NSRA) is a rank-based metric for evaluating
+  perturbation-induced gene expression predictions in Perturb-seq data.
