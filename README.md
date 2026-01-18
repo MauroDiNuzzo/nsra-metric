@@ -1,6 +1,9 @@
 
 # Null-Stratified Rank Accuracy (NSRA): a rank-based metric for evaluating Perturb-seq predictions
 
+![status](https://img.shields.io/badge/status-proposal--stage-yellow)
+
+
 ## Metric overview
 
 Null-Stratified Rank Accuracy (NSRA) is a rank-based evaluation metric for perturbation-induced gene expression prediction, designed for sparse and heterogeneous Perturb-seq data.
@@ -12,16 +15,11 @@ By collapsing the noise-dominated null region into a single equivalence class, N
 
 ### DISCLAIMER
 
-> $`\quad\\`$
-> ![status](https://img.shields.io/badge/status-proposal--stage-yellow)
->
 > The development of evaluation metrics for Perturb-seq is an open, community-driven effort, and NSRA is proposed in this spirit. This work is not linked to any academic research project, consortium, or private for-profit initiative, and it has not undergone peer review. At its current stage, NSRA should be regarded as a proposed metric, rather than a validated or established standard.
 >
 > NSRA has not yet been systematically tested on large, diverse real-world Perturb-seq datasets, nor has it been comprehensively benchmarked against existing magnitude-based or rank-based metrics. While the formulation is motivated by biological and statistical considerations, it is possible that the metric exhibits unforeseen limitations, edge cases, or failure modes in specific experimental regimes. Accordingly, its suitability for any particular application is not warranted at this stage.
 >
 > The primary goal of releasing NSRA at this point is to make the idea and implementation available to the community for scrutiny, experimentation, and discussion. Feedback, empirical testing, critical assessment, and contributions (whether conceptual, methodological, or implementation-related) are very welcome and strongly encouraged. Community input will be essential to determine whether NSRA is useful in practice, how it should be refined, or whether alternative formulations are preferable.
->
-> $`\quad\\`$
 
 ## Background and motivation
 
@@ -150,9 +148,9 @@ For any pair $`(g,h) \in \mathcal{P}`$, we define the true ordering:
 ```math
 \mathrm{sign}_{\mathrm{meas}}(g,h) =
 \begin{cases}
-\operatorname{sign}\left(\Delta^{(\mathrm{meas})}_g - \Delta^{(\mathrm{meas})}_h\right),
+\mathop{\text{sign}}\left(\Delta^{(\mathrm{meas})}_g - \Delta^{(\mathrm{meas})}_h\right),
 & \text{if } c(g)=c(h)\in{+1,-1} \\
-\operatorname{sign}\left(c(g)-c(h)\right),
+\mathop{\text{sign}}\left(c(g)-c(h)\right),
 & \text{if } c(g)\neq c(h)
 \end{cases}
 ```
@@ -185,14 +183,14 @@ For clarity, here is the full cross-class behavior:
 | $`D`$   | $`U`$   | $`−1`$     | $`+1`$     | $`−1`$             | down < up      |
 | $`N`$   | $`D`$   | $`0`$      | $`−1`$     | $`+1`$             | null > down    |
 | $`D`$   | $`N`$   | $`−1`$     | $`0`$      | $`−1`$             | down < null    |
-| $`U`$   | $`U`$   | $`+1`$     | $`+1`$     | $`\operatorname{sign}(\Delta_g−\Delta_h)`$    | order within $`U`$ |
-| $`D`$   | $`D`$   | $`−1`$     | $`−1`$     | $`\operatorname{sign}(\Delta_g−\Delta_h)`$    | order within $`D`$ |
+| $`U`$   | $`U`$   | $`+1`$     | $`+1`$     | $`\mathop{\text{sign}}(\Delta_g−\Delta_h)`$    | order within $`U`$ |
+| $`D`$   | $`D`$   | $`−1`$     | $`−1`$     | $`\mathop{\text{sign}}(\Delta_g−\Delta_h)`$    | order within $`D`$ |
 
 The predicted ordering uses only the model output (no class information enters here), which is simply:
 
 ```math
-\mathrm{sign}_{\mathrm{pred}}(g,h) =
-\operatorname{sign}(\Delta^{(\mathrm{pred})}_g - \Delta^{(\mathrm{pred})}_h).
+\mathop{\text{sign}}_{\mathrm{pred}}(g,h) =
+\mathop{\text{sign}}(\Delta^{(\mathrm{pred})}_g - \Delta^{(\mathrm{pred})}_h).
 ```
 
 ### Pairwise correctness indicator
