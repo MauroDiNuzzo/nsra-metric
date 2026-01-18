@@ -139,7 +139,7 @@ Equivalently, this set can be written compactly as:
 
 By construction, pairs in $`N \times N`$ are excluded.
 
-Because genes in $`N`$ form an unconstrained equivalence class, there is no unique total ranking consistent with the biological structure. Assigning explicit ranks to null genes would therefore introduce arbitrary ordering artifacts. For this reason, NSRA is formulated in terms of pairwise signs rather than explicit ranks. Importantly, this does not lose information: explicit ranks encode global positions, while signs of pairwise differences encode the same ordering information locally. The pairwise formulation allows biologically meaningful comparisons to be counted while excluding null–null comparisons entirely.
+Because genes in $`N`$ form an unconstrained equivalence class, there is no unique total ranking consistent with the biological structure. Assigning explicit ranks to null genes would therefore introduce arbitrary ordering artifacts. For this reason, NSRA is formulated in terms of pairwise signs rather than explicit ranks. Importantly, this does not lose information: explicit ranks encode global positions, while signs of pairwise differences encode the same ordering information locally. The pairwise formulation allows biologically meaningful comparisons to be counted while excluding null-null comparisons entirely.
 
 ### Ordering sign
 
@@ -171,7 +171,7 @@ Thus, the definition is antisymmetric:
 \mathrm{sign}_{\mathrm{meas}}(g,h) = -\mathrm{sign}_{\mathrm{meas}}(h,g)
 ```
 
-It is noted that $`N`$ is an equivalence class internally, but it is ordered relative to $`U`$ and $`D$. Cross-class ordering uses only class membership, while within-class ordering uses signed deltas.
+It is noted that $`N`$ is an equivalence class internally, but it is ordered relative to $`U`$ and $`D`$. Cross-class ordering uses only class membership, while within-class ordering uses signed deltas.
 
 For clarity, here is the full cross-class behavior:
 
@@ -265,7 +265,7 @@ and similarly for predictions:
 \Delta^{(\mathrm{pred})}_g - \Delta^{(\mathrm{pred})}_h \in [-\epsilon, \epsilon] \implies \mathrm{sign}_{\mathrm{pred}}(g,h) = 0
 ```
 
-The choice of $`\epsilon`$ might depends on measurement noise level, pseudo-bulk averaging, and/or normalization scale. In particular, $`\epsilon`$ should approximate the scale of irreducible noise (i.e., noise floor) in $`\Delta`$ calculated in the relevant (linear or log) space. Notably, log-space deltas admit a globally meaningful $`\epsilon`$, while linear-space deltas do not unless made relative.
+The choice of $`\epsilon`$ might depend on measurement noise level, pseudo-bulk averaging, and/or normalization scale. In particular, $`\epsilon`$ should approximate the scale of irreducible noise (i.e., noise floor) in $`\Delta`$ calculated in the relevant (linear or log) space. Notably, log-space deltas admit a globally meaningful $`\epsilon`$, while linear-space deltas do not unless made relative.
 
 ### Score definition
 
@@ -353,24 +353,24 @@ This formulation is **exactly equivalent** to the dense pairwise sign test defin
 
 NSRA is computed using a rank-based aggregation procedure with the following steps:
 
-1. **Measured stratification**
+1. **Measured stratification**:
    Compute the measured class label
    $`s_{\mathrm{meas}}(g) \in {+1, 0, -1}`$
    using signed deltas and tolerance $`\epsilon`$, assigning genes to $`U`$, $`N`$, or $`D`$.
 
-2. **Sorting by predictions**
+2. **Sorting by predictions**:
    Sort all genes by predicted deltas $`\Delta^{(\mathrm{pred})}`$ in descending order.
 
-3. **Single pass aggregation**
+3. **Single pass aggregation**:
    Traverse genes in predicted order while maintaining counters for how many $`N`$ and $`D`$ genes have already been encountered.
 
-4. **Accumulation of correct comparisons**
+4. **Accumulation of correct comparisons**:
 
    * When encountering a gene in $`U`$, count all correctly ordered $`U-N`$ and $`U-D`$ pairs.
    * When encountering a gene in $`N`$, count correctly ordered $`N-D`$ pairs.
    * Pairs within the same class $`(U-U), (D-D), (N-N)`$ are ignored, consistent with the partial order definition.
 
-5. **Handling predicted ties**
+5. **Handling predicted ties**:
    Predicted ties are handled explicitly by assigning fractional credit (typically 0.5), consistent with the pairwise definition.
 
 This procedure has time complexity $`O(G \log G)`$ due to sorting, and memory complexity $`O(G)`$, making it suitable for genome-scale Perturb-seq data.
