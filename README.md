@@ -89,9 +89,9 @@ u \succ n \succ d.
 
 Within classes, ordering is defined as follows:
 
-* For $`u,u' \in U`$: ordered by $`\Delta^{(\mathrm{meas})}`$,
-* For $`d,d' \in D`$: ordered by $`\Delta^{(\mathrm{meas})}`$,
-* For $`n,n' \in N`$: no ordering constraint.
+* For $`u,u\prime \in U`$: ordered by $`\Delta^{(\mathrm{meas})}`$,
+* For $`d,d\prime \in D`$: ordered by $`\Delta^{(\mathrm{meas})}`$,
+* For $`n,n\prime \in N`$: no ordering constraint.
 
 Thus, $`N`$ forms a single equivalence class with unconstrained internal ordering.
 
@@ -134,7 +134,7 @@ corresponding respectively to:
 Equivalently, this set can be written compactly as:
 
 ```math
-\mathcal{P} = {(g,h) \in G \times G : g \neq h,; \neg(c(g)=0 \wedge c(h)=0)}.
+\mathcal{P} = {(g,h) \in G \times G : g \neq h, \neg(c(g)=0 \wedge c(h)=0)}.
 ```
 
 By construction, pairs in $`N \times N`$ are excluded.
