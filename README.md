@@ -189,7 +189,7 @@ For clarity, here is the full cross-class behavior:
 The predicted ordering uses only the model output (no class information enters here), which is simply:
 
 ```math
-\mathop{\text{sign}}_{\mathrm{pred}}(g,h) =
+\mathrm{sign}_{\mathrm{pred}}(g,h) =
 \mathop{\text{sign}}(\Delta^{(\mathrm{pred})}_g - \Delta^{(\mathrm{pred})}_h).
 ```
 
@@ -253,7 +253,7 @@ C(g,h) =
 \end{cases}
 ```
 
-We also incorporate soft sign-tolerance to reduce sign instability near zero. Indeed, in real expression data, tiny differences may be numerically non-zero but biologically irrelevant. That could be taken into account by introducing a small tolerance $`\epsilon > 0$:
+We also incorporate soft sign-tolerance to reduce sign instability near zero. Indeed, in real expression data, tiny differences may be numerically non-zero but biologically irrelevant. That could be taken into account by introducing a small tolerance $`\epsilon > 0`$:
 
 ```math
 \Delta^{(\mathrm{meas})}_g - \Delta^{(\mathrm{meas})}_h \in [-\epsilon, \epsilon] \implies \mathrm{sign}_{\mathrm{meas}}(g,h) = 0
@@ -286,7 +286,7 @@ This is somewhat equivalent to a Kendall-style pairwise accuracy computed on a r
 NSRA is to be interpreted as a biological ordering consistency metric representing a structural fidelity score, with the following outcomes: 
 
 * biologically faithful (near perfect) ordering: $`\approx 1.0`$
-* largely correct structure with local errors: $`\approx 0.7–0.9`$
+* largely correct structure with local errors: $`\approx 0.7-0.9`$
 * random ordering (no usable ordering information): $`\approx 0.5`$
 * systematically misleading predictions: $`<0.5`$
 
@@ -391,7 +391,7 @@ While all implementations use the same aggregated algorithm, performance differs
 * MATLAB is fastest for the pure interpreted implementation due to JIT optimization.
 * The compiled Python (`pybind11`) backend is faster than the MATLAB MEX version, which incurs additional function-call and memory-access overhead.
 
-The C++ backend is optional; the pure Python implementation remains feasible for genome-scale data. The Python implementation requires only NumPy; no additional dependencies are needed.
+The C++ backend is optional, and the pure Python implementation remains feasible for genome-scale data. The Python implementation requires only NumPy, no additional dependencies are needed.
 
 
 ## FAQs
