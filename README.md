@@ -12,7 +12,7 @@ By collapsing the noise-dominated null region into a single equivalence class, N
 
 ### DISCLAIMER
 
-> $\quad\\$
+> $`\quad\\`$
 > ![status](https://img.shields.io/badge/status-proposal--stage-yellow)
 >
 > The development of evaluation metrics for Perturb-seq is an open, community-driven effort, and NSRA is proposed in this spirit. This work is not linked to any academic research project, consortium, or private for-profit initiative, and it has not undergone peer review. At its current stage, NSRA should be regarded as a proposed metric, rather than a validated or established standard.
@@ -21,7 +21,7 @@ By collapsing the noise-dominated null region into a single equivalence class, N
 >
 > The primary goal of releasing NSRA at this point is to make the idea and implementation available to the community for scrutiny, experimentation, and discussion. Feedback, empirical testing, critical assessment, and contributions (whether conceptual, methodological, or implementation-related) are very welcome and strongly encouraged. Community input will be essential to determine whether NSRA is useful in practice, how it should be refined, or whether alternative formulations are preferable.
 >
-> $\quad\\$
+> $`\quad\\`$
 
 ## Background and motivation
 
@@ -48,65 +48,71 @@ The objective is to evaluate not only predictive correctness, but also the inter
 
 Let:
 
-* $G = \{g_1,\dots,g_N\}$ denote the set of genes,
-* $x^{(0)} \in \mathbb{R}^N$ the reference (control) expression vector,
-* $x^{(\mathrm{meas})} \in \mathbb{R}^N$ the measured perturbed expression,
-* $x^{(\mathrm{pred})} \in \mathbb{R}^N$ a model prediction.
+* $`G = \{g_1,\dots,g_N\}`$ denote the set of genes,
+* $`x^{(0)} \in \mathbb{R}^N`$ the reference (control) expression vector,
+* $`x^{(\mathrm{meas})} \in \mathbb{R}^N`$ the measured perturbed expression,
+* $`x^{(\mathrm{pred})} \in \mathbb{R}^N`$ a model prediction.
 
-For each gene $g \in G$, we define measured and predicted signed expression deltas relative to control as:
-$$
-\Delta^{(\mathrm{meas})}_g = x^{(\mathrm{meas})}_g - x^{(0)}_g, \qquad
-\Delta^{(\mathrm{pred})}_g = x^{(\mathrm{pred})}_g - x^{(0)}_g,
-$$
+For each gene $`g \in G`$, we define measured and predicted signed expression deltas relative to control as:
+
+```math
+\Delta^{(\mathrm{meas})}_g = x^{(\mathrm{meas})}_g - x^{(0)}_g, \qquad \Delta^{(\mathrm{pred})}_g = x^{(\mathrm{pred})}_g - x^{(0)}_g,
+```
+
 when computed in linear space, or
-$$
+
+```math
 \Delta^{(\mathrm{meas})}_g = \log(x^{(\mathrm{meas})}_g + 1) - \log(x^{(0)}_g + 1), \qquad
 \Delta^{(\mathrm{pred})}_g = \log(x^{(\mathrm{pred})}_g + 1) - \log(x^{(0)}_g + 1),
-$$
+```
+
 when computed in log-transformed space.
 
 Because NSRA depends only on ordering, the choice of delta definition matters only insofar as it affects monotonicity across genes. In practice, up- and down-regulated gene sets are assumed to be defined using signed log1p expression deltas relative to control, ensuring scale-invariant detection of regulatory effects. However, because log transformation compresses effect sizes, this choice influences which genes enter or exit the null set (see below).
 
-Throughout, all rankings are assumed to be descending in $\Delta_g$: most upregulated genes first, most downregulated genes last.
+Throughout, all rankings are assumed to be descending in $`\Delta_g`$: most upregulated genes first, most downregulated genes last.
 
 ### Gene stratification and partial order
 
 Using the full experimental dataset (including replicates), genes are partitioned once and for all into three disjoint sets:
 
-* $U$: significantly upregulated genes,
-* $D$: significantly downregulated genes,
-* $N = G \setminus (U \cup D)$: non-differentially expressed (null) genes.
+* $`U`$: significantly upregulated genes,
+* $`D`$: significantly downregulated genes,
+* $`N = G \setminus (U \cup D)`$: non-differentially expressed (null) genes.
 
 This partition is external to the metric: it is not model-dependent and is fixed across all prediction evaluations.
 
 The biological ordering implied by the data is a partial order, not a total order. Between classes, the following relations hold:
-$$
+
+```math
 \forall u \in U, \forall n \in N, \forall d \in D:\quad
 u \succ n \succ d.
-$$
+```
 
 Within classes, ordering is defined as follows:
 
-* For $u,u' \in U$: ordered by $\Delta^{(\mathrm{meas})}$,
-* For $d,d' \in D$: ordered by $\Delta^{(\mathrm{meas})}$,
-* For $n,n' \in N$: no ordering constraint.
+* For $`u,u' \in U`$: ordered by $`\Delta^{(\mathrm{meas})}`$,
+* For $`d,d' \in D`$: ordered by $`\Delta^{(\mathrm{meas})}`$,
+* For $`n,n' \in N`$: no ordering constraint.
 
-Thus, $N$ forms a single equivalence class with unconstrained internal ordering.
+Thus, $`N`$ forms a single equivalence class with unconstrained internal ordering.
 
 For convenience, we define a class label function:
-$$
+
+```math
 c(g) =
 \begin{cases}
 +1, & g \in U, \\
 0, & g \in N, \\
 -1, & g \in D.
 \end{cases}
-$$
+```
 
 ### Informative pair set
 
 Evaluation is based on pairwise comparisons that are meaningful under the partial order. We define the set of informative ordered gene pairs as:
-$$
+
+```math
 \mathcal{P} =
 (U \times U)
 \cup
@@ -117,7 +123,8 @@ $$
 (N \times D)
 \cup
 (U \times D),
-$$
+```
+
 corresponding respectively to:
 
 * up-up comparisons,
@@ -127,21 +134,20 @@ corresponding respectively to:
 * up vs down.
 
 Equivalently, this set can be written compactly as:
-$$
+
+```math
 \mathcal{P} = {(g,h) \in G \times G : g \neq h,; \neg(c(g)=0 \wedge c(h)=0)}.
-$$
+```
 
-By construction, pairs in $N \times N$ are excluded.
+By construction, pairs in $`N \times N`$ are excluded.
 
-Because genes in $N$ form an unconstrained equivalence class, there is no unique total ranking consistent with the biological structure. Assigning explicit ranks to null genes would therefore introduce arbitrary ordering artifacts. For this reason, NSRA is formulated in terms of **pairwise signs** rather than explicit ranks. Importantly, this does not lose information: explicit ranks encode global positions, while signs of pairwise differences encode the same ordering information locally. The pairwise formulation allows biologically meaningful comparisons to be counted while excluding null–null comparisons entirely.
-
-
+Because genes in $`N`$ form an unconstrained equivalence class, there is no unique total ranking consistent with the biological structure. Assigning explicit ranks to null genes would therefore introduce arbitrary ordering artifacts. For this reason, NSRA is formulated in terms of pairwise signs rather than explicit ranks. Importantly, this does not lose information: explicit ranks encode global positions, while signs of pairwise differences encode the same ordering information locally. The pairwise formulation allows biologically meaningful comparisons to be counted while excluding null–null comparisons entirely.
 
 ### Ordering sign
 
-For any pair $(g,h) \in \mathcal{P}$, we define the true ordering:
+For any pair $`(g,h) \in \mathcal{P}`$, we define the true ordering:
 
-$$
+```math
 \mathrm{sign}_{\mathrm{meas}}(g,h) =
 \begin{cases}
 \operatorname{sign}\left(\Delta^{(\mathrm{meas})}_g - \Delta^{(\mathrm{meas})}_h\right),
@@ -149,95 +155,97 @@ $$
 \operatorname{sign}\left(c(g)-c(h)\right),
 & \text{if } c(g)\neq c(h)
 \end{cases}
-$$
+```
 
 This makes it explicit that class separation dominates, with deltas only refining ordering within classes.
 
-By definition, $\mathrm{sign}_{\mathrm{meas}}(g,h)$ encodes the biologically correct ordering sign for the ordered pair $(g,h)$:
+By definition, $`\mathrm{sign}_{\mathrm{meas}}(g,h)`$ encodes the biologically correct ordering sign for the ordered pair $`(g,h)`$:
 
-* $+1$ means that gene $g$ should be ranked above gene $h$ (i.e., $g \succ h$, or $\Delta_g > \Delta_h$)
+* $`+1`$ means that gene $`g`$ should be ranked above gene $`h`$ (i.e., $`g \succ h`$, or $`\Delta_g > \Delta_h`$)
 
-* $−1$ means that gene $g$ should be ranked below gene $h$ (i.e., $g \prec h$, or $\Delta_g < \Delta_h$)
+* $`−1`$ means that gene $`g`$ should be ranked below gene $`h`$ (i.e., $`g \prec h`$, or $`\Delta_g < \Delta_h`$)
 
-* $0$ means no constraint (or tie, see below)
+* $`0`$ means no constraint (or tie, see below)
 
 Thus, the definition is antisymmetric:
-$$
-\mathrm{sign}_{\mathrm{meas}}(g,h) = -\mathrm{sign}_{\mathrm{meas}}(h,g)
-$$
 
-It is noted that $N$ is an equivalence class internally, but it is ordered relative to $U$ and $D$. Cross-class ordering uses only class membership, while within-class ordering uses signed deltas.
+```math
+\mathrm{sign}_{\mathrm{meas}}(g,h) = -\mathrm{sign}_{\mathrm{meas}}(h,g)
+```
+
+It is noted that $`N`$ is an equivalence class internally, but it is ordered relative to $`U`$ and $`D$. Cross-class ordering uses only class membership, while within-class ordering uses signed deltas.
 
 For clarity, here is the full cross-class behavior:
 
-| $g$ | $h$ | $c(g)$ | $c(h)$ | $\mathrm{sign}_{\mathrm{meas}}(g,h)$ | Interpretation |
+| $`g`$ | $`h`$ | $`c(g)`$ | $`c(h)`$ | $`\mathrm{sign}_{\mathrm{meas}}(g,h)`$ | Interpretation |
 | --- | --- | ------ | ------ | -------------- | -------------- |
-| $U$   | $N$   | $+1$     | $0$      | $+1$             | up > null      |
-| $N$   | $U$   | $0$      | $+1$     | $−1$             | null < up      |
-| $U$   | $D$   | $+1$     | $−1$     | $+1$             | up > down      |
-| $D$   | $U$   | $−1$     | $+1$     | $−1$             | down < up      |
-| $N$   | $D$   | $0$      | $−1$     | $+1$             | null > down    |
-| $D$   | $N$   | $−1$     | $0$      | $−1$             | down < null    |
-| $U$   | $U$   | $+1$     | $+1$     | $\operatorname{sign}(\Delta_g−\Delta_h)$    | order within $U$ |
-| $D$   | $D$   | $−1$     | $−1$     | $\operatorname{sign}(\Delta_g−\Delta_h)$    | order within $D$ |
+| $`U`$   | $`N`$   | $`+1`$     | $`0`$      | $`+1`$             | up > null      |
+| $`N`$   | $`U`$   | $`0`$      | $`+1`$     | $`−1`$             | null < up      |
+| $`U`$   | $`D`$   | $`+1`$     | $`−1`$     | $`+1`$             | up > down      |
+| $`D`$   | $`U`$   | $`−1`$     | $`+1`$     | $`−1`$             | down < up      |
+| $`N`$   | $`D`$   | $`0`$      | $`−1`$     | $`+1`$             | null > down    |
+| $`D`$   | $`N`$   | $`−1`$     | $`0`$      | $`−1`$             | down < null    |
+| $`U`$   | $`U`$   | $`+1`$     | $`+1`$     | $`\operatorname{sign}(\Delta_g−\Delta_h)`$    | order within $`U`$ |
+| $`D`$   | $`D`$   | $`−1`$     | $`−1`$     | $`\operatorname{sign}(\Delta_g−\Delta_h)`$    | order within $`D`$ |
 
 The predicted ordering uses only the model output (no class information enters here), which is simply:
 
-$$
+```math
 \mathrm{sign}_{\mathrm{pred}}(g,h) =
 \operatorname{sign}(\Delta^{(\mathrm{pred})}_g - \Delta^{(\mathrm{pred})}_h).
-$$
+```
 
 ### Pairwise correctness indicator
 
 Now, we can define correctness as:
-$$
+
+```math
 C(g,h) =
 \begin{cases}
 1, & \mathrm{sign}_{\mathrm{pred}}(g,h) = \mathrm{sign}_{\mathrm{meas}}(g,h) \\
 0, & \text{otherwise}
 \end{cases}
-$$
+```
 
 or, more compactly:
 
-$$
+```math
 C(g,h) = 
 \mathbb{I}\left[
 \mathrm{sign}_{\mathrm{pred}}(g,h)
 =
 \mathrm{sign}_{\mathrm{meas}}(g,h)
 \right]
-$$
+```
 
-where $\mathbb{I}[\cdot]$ is the indicator function.
+where $`\mathbb{I}[\cdot]`$ is the indicator function.
 
 Ties in the pairwise comparison can arise from two sources, as follows. 
 
-First, we can have measured within-class ties, i.e., genes in $U$ or $D$ may have identical or nearly identical $\Delta^{(\mathrm{meas})}$, especially after averaging or pseudo-bulk aggregation. These are true ties, and no ordering is biologically meaningful within the tied set. Formally, for a pair $(g,h)\in U\times U$ or $D\times D$ we have:
+First, we can have measured within-class ties, i.e., genes in $`U`$ or $`D`$ may have identical or nearly identical $`\Delta^{(\mathrm{meas})}`$, especially after averaging or pseudo-bulk aggregation. These are true ties, and no ordering is biologically meaningful within the tied set. Formally, for a pair $`(g,h)\in U\times U`$ or $`D\times D`$ we have:
 
-$$
+```math
 \text{if } \Delta^{(\mathrm{meas})}_g = \Delta^{(\mathrm{meas})}_h \implies \mathrm{sign}_{\mathrm{meas}}(g,h) = 0
-$$
+```
 
 which means no constraint (any predicted ordering is acceptable).
 
-Second, a model may predict identical $\Delta^{(\mathrm{pred})}$ for multiple genes (common in sparse models or rounding), which should be penalized only if it contradicts the biologically meaningful ordering. Formally, for a pair $(g,h)$ we have:
+Second, a model may predict identical $`\Delta^{(\mathrm{pred})}`$ for multiple genes (common in sparse models or rounding), which should be penalized only if it contradicts the biologically meaningful ordering. Formally, for a pair $`(g,h)`$ we have:
 
-$$
+```math
 \mathrm{sign}_{\mathrm{pred}}(g,h) =
 \begin{cases}
 +1 & \Delta^{(\mathrm{pred})}_g > \Delta^{(\mathrm{pred})}_h \\
 -1 & \Delta^{(\mathrm{pred})}_g < \Delta^{(\mathrm{pred})}_h \\
 0 & \Delta^{(\mathrm{pred})}_g = \Delta^{(\mathrm{pred})}_h
 \end{cases}
-$$
+```
 
-If a model predicts a tie where a strict ordering exists in the measured data, it is partially correct (it does not reverse the order, but fails to distinguish the two genes). Thus, we can assign this case a partial credit, which is a standard approach in rank correlation metrics (e.g., Kendall’s $\tau_b$).
+If a model predicts a tie where a strict ordering exists in the measured data, it is partially correct (it does not reverse the order, but fails to distinguish the two genes). Thus, we can assign this case a partial credit, which is a standard approach in rank correlation metrics (e.g., Kendall's $`\tau_b`$).
 
-In particular, with ties the correctness indicator $C(g,h)$ can be written as:
+In particular, with ties the correctness indicator $`C(g,h)`$ can be written as:
 
-$$
+```math
 C(g,h) =
 \begin{cases}
 1, & \mathrm{sign}_{\mathrm{meas}}(g,h) = 0 \quad \text{(measured tie)} \\
@@ -245,44 +253,44 @@ C(g,h) =
 0.5, & \mathrm{sign}_{\mathrm{meas}}(g,h) \neq 0 \land \mathrm{sign}_{\mathrm{pred}}(g,h) = 0 \\
 0, & \text{otherwise}
 \end{cases}
-$$
+```
 
-We also incorporate soft sign-tolerance to reduce sign instability near zero. Indeed, in real expression data, tiny differences may be numerically non-zero but biologically irrelevant. That could be taken into account by introducing a small tolerance $\epsilon > 0$:
+We also incorporate soft sign-tolerance to reduce sign instability near zero. Indeed, in real expression data, tiny differences may be numerically non-zero but biologically irrelevant. That could be taken into account by introducing a small tolerance $`\epsilon > 0$:
 
-$$
+```math
 \Delta^{(\mathrm{meas})}_g - \Delta^{(\mathrm{meas})}_h \in [-\epsilon, \epsilon] \implies \mathrm{sign}_{\mathrm{meas}}(g,h) = 0
-$$
+```
 
 and similarly for predictions:
 
-$$
+```math
 \Delta^{(\mathrm{pred})}_g - \Delta^{(\mathrm{pred})}_h \in [-\epsilon, \epsilon] \implies \mathrm{sign}_{\mathrm{pred}}(g,h) = 0
-$$
+```
 
-The choice of $\epsilon$ might depends on measurement noise level, pseudo-bulk averaging, and/or normalization scale. In particular, $\epsilon$ should approximate the scale of irreducible noise (i.e., noise floor) in $\Delta$ calculated in the relevant (linear or log) space. Notably, log-space deltas admit a globally meaningful $\epsilon$, while linear-space deltas do not unless made relative.
+The choice of $`\epsilon`$ might depends on measurement noise level, pseudo-bulk averaging, and/or normalization scale. In particular, $`\epsilon`$ should approximate the scale of irreducible noise (i.e., noise floor) in $`\Delta`$ calculated in the relevant (linear or log) space. Notably, log-space deltas admit a globally meaningful $`\epsilon`$, while linear-space deltas do not unless made relative.
 
 ### Score definition
 
 At this point, we can finally define the metric as the average correctness over all informative pairs:
 
-$$
+```math
 \boxed{
 \mathrm{NSRA} =
 \frac{1}{|\mathcal{P}|}
 \sum_{(g,h) \in \mathcal{P}} C_{\epsilon}(g,h) \quad \in [0,1]
 }
-$$
+```
 
-where $C_{\epsilon}(g,h)$ is computed using tolerance-aware signs as above.
+where $`C_{\epsilon}(g,h)`$ is computed using tolerance-aware signs as above.
 
-This is somewhat equivalent to a Kendall-style pairwise accuracy computed on a restricted pair set. Accordingly, NSRA could be expressed as $\tau_{\text{NSRA}} = 2 \cdot \mathrm{NSRA} - 1 \in [-1,1]$ if a signed correlation-like score is preferred.
+This is somewhat equivalent to a Kendall-style pairwise accuracy computed on a restricted pair set. Accordingly, NSRA could be expressed as $`\tau_{\text{NSRA}} = 2 \cdot \mathrm{NSRA} - 1 \in [-1,1]`$ if a signed correlation-like score is preferred.
 
 NSRA is to be interpreted as a biological ordering consistency metric representing a structural fidelity score, with the following outcomes: 
 
-* biologically faithful (near perfect) ordering: $\approx 1.0$
-* largely correct structure with local errors: $\approx 0.7–0.9$
-* random ordering (no usable ordering information): $\approx 0.5$
-* systematically misleading predictions: $<0.5$
+* biologically faithful (near perfect) ordering: $`\approx 1.0`$
+* largely correct structure with local errors: $`\approx 0.7–0.9`$
+* random ordering (no usable ordering information): $`\approx 0.5`$
+* systematically misleading predictions: $`<0.5`$
 
 These interpretations are independent of scale, normalization, and noise variance, i.e., precisely the regime where magnitude-based metrics become ambiguous.
 
@@ -292,7 +300,7 @@ The metric has the followed properties:
 * no weights
 * no penalties
 * no thresholds inside the metric (DEG partition is fixed externally)
-* robustness to numerical noise via $\epsilon$
+* robustness to numerical noise via $`\epsilon`$
 
 Characteristic behaviors include:
 
@@ -309,35 +317,37 @@ Importantly, the metric is not a measure of effect-size accuracy and should not 
 ### Computational challenge
 
 The naive evaluation of NSRA via explicit pairwise comparisons scales as
-$O(G^2)$,
-where $G$ is the number of genes. For $G \approx 20{,}000$, the number of unordered pairs is
-$$
-\frac{G(G-1)}{2} \approx 2 \times 10^8.
-$$
+$`O(G^2)`$,
+where $`G`$ is the number of genes. For $`G \approx 20{,}000`$, the number of unordered pairs is:
 
-Materializing even a single dense array of this size is prohibitive: a `float64` matrix requires $\sim 1.6$ GB of memory, while an `int8` representation still requires $\sim 200$ MB. Since multiple intermediate arrays would be needed, peak memory usage quickly exceeds what is practical on typical machines, and the total number of operations leads to runtimes on the order of tens of seconds to minutes.
+```math
+\frac{G(G-1)}{2} \approx 2 \times 10^8.
+```
+
+Materializing even a single dense array of this size is prohibitive: a `float64` matrix requires $`\sim 1.6`$ GB of memory, while an `int8` representation still requires $`\sim 200`$ MB. Since multiple intermediate arrays would be needed, peak memory usage quickly exceeds what is practical on typical machines, and the total number of operations leads to runtimes on the order of tens of seconds to minutes.
 
 As a result, a dense pairwise implementation of NSRA is neither memory-efficient nor scalable to genome-scale data.
 
 ### Aggregated formulation
 
-Although NSRA is defined in terms of pairwise comparisons, it does not require explicit enumeration of all gene pairs. In particular, pairs within the null stratum $(N \times N)$ are excluded by construction, and in typical Perturb-seq experiments the number of truly responsive genes is small:
-$$
-|U| + |D| \ll G.
-$$
+Although NSRA is defined in terms of pairwise comparisons, it does not require explicit enumeration of all gene pairs. In particular, pairs within the null stratum $`(N \times N)`$ are excluded by construction, and in typical Perturb-seq experiments the number of truly responsive genes is small:
 
-All informative comparisons involve at least one gene in $U$ or $D$. Exploiting this structure, NSRA can be rewritten in aggregated form as
-$$
+```math
+|U| + |D| \ll G.
+```
+
+All informative comparisons involve at least one gene in $`U`$ or $`D`$. Exploiting this structure, NSRA can be rewritten in aggregated form as:
+
+```math
 \mathrm{NSRA} =
 \frac{
 \sum_{g \in U}\sum_{h \in N \cup D} \mathbb{I}\left[\Delta^{(\mathrm{pred})}_g > \Delta^{(\mathrm{pred})}_h\right]
 +
 \sum_{g \in N}\sum_{h \in D} \mathbb{I}\left[\Delta^{(\mathrm{pred})}_g > \Delta^{(\mathrm{pred})}_h\right]
-}{
-|\mathcal{P}|
-},
-$$
-where $|\mathcal{P}|$ is the number of informative ordered pairs.
+}{|\mathcal{P}|},
+```
+
+where $`|\mathcal{P}|`$ is the number of informative ordered pairs.
 
 This formulation is **exactly equivalent** to the dense pairwise sign test defined in the Formalization section, but avoids constructing pairwise matrices altogether. It relies only on the relative ordering of predicted deltas and the measured gene stratification.
 
@@ -347,29 +357,25 @@ NSRA is computed using a rank-based aggregation procedure with the following ste
 
 1. **Measured stratification**
    Compute the measured class label
-   $
-   s_{\mathrm{meas}}(g) \in {+1, 0, -1}
-   $
-   using signed deltas and tolerance $\epsilon$, assigning genes to $U$, $N$, or $D$.
+   $`s_{\mathrm{meas}}(g) \in {+1, 0, -1}`$
+   using signed deltas and tolerance $`\epsilon`$, assigning genes to $`U`$, $`N`$, or $`D`$.
 
 2. **Sorting by predictions**
-   Sort all genes by predicted deltas $\Delta^{(\mathrm{pred})}$ in descending order.
+   Sort all genes by predicted deltas $`\Delta^{(\mathrm{pred})}`$ in descending order.
 
 3. **Single pass aggregation**
-   Traverse genes in predicted order while maintaining counters for how many $N$ and $D$ genes have already been encountered.
+   Traverse genes in predicted order while maintaining counters for how many $`N`$ and $`D`$ genes have already been encountered.
 
 4. **Accumulation of correct comparisons**
 
-   * When encountering a gene in $U$, count all correctly ordered $U-N$ and $U-D$ pairs.
-   * When encountering a gene in $N$, count correctly ordered $N-D$ pairs.
-   * Pairs within the same class $(U-U), (D-D), (N-N)$ are ignored, consistent with the partial order definition.
+   * When encountering a gene in $`U`$, count all correctly ordered $`U-N`$ and $`U-D`$ pairs.
+   * When encountering a gene in $`N`$, count correctly ordered $`N-D`$ pairs.
+   * Pairs within the same class $`(U-U), (D-D), (N-N)`$ are ignored, consistent with the partial order definition.
 
 5. **Handling predicted ties**
    Predicted ties are handled explicitly by assigning fractional credit (typically 0.5), consistent with the pairwise definition.
 
-This procedure has time complexity $O(G \log G)$
-due to sorting, and memory complexity
-$O(G)$, making it suitable for genome-scale Perturb-seq data.
+This procedure has time complexity $`O(G \log G)`$ due to sorting, and memory complexity $`O(G)`$, making it suitable for genome-scale Perturb-seq data.
 
 ### Practical implementations
 
